@@ -13,6 +13,8 @@ server {
  add_header Content-Security-Policy "default-src 'self'; script-src 'self' https://mc.yandex.ru; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; connect-src 'self' https://*.yandex.ru https://*.yandex.com; frame-src https://yandex.ru; object-src 'none'; base-uri 'self'; frame-ancestors 'none'" always;
  gzip on;
  gzip_types text/css application/javascript application/json image/svg+xml;
+ # SSI inserts /api/meta directly into HTML, so this upstream response must be plain text.
+ location = /api/meta { proxy_pass ${BACKEND_URL}; proxy_ssl_server_name on; proxy_set_header Host $proxy_host; proxy_set_header X-Page-Path $request_uri; proxy_set_header Accept-Encoding ""; proxy_read_timeout 25s; }
  location /api/ { proxy_pass ${BACKEND_URL}; proxy_ssl_server_name on; proxy_set_header Host $proxy_host; proxy_set_header X-Page-Path $request_uri; proxy_read_timeout 25s; }
  location = /robots.txt { proxy_pass ${BACKEND_URL}; proxy_ssl_server_name on; }
  location = /sitemap.xml { proxy_pass ${BACKEND_URL}; proxy_ssl_server_name on; }
