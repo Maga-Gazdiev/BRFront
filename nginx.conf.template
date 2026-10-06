@@ -1,5 +1,5 @@
 server {
- listen 80;
+ listen ${PORT};
  server_name _;
  root /usr/share/nginx/html;
  index index.html;
@@ -13,11 +13,11 @@ server {
  add_header Content-Security-Policy "default-src 'self'; script-src 'self' https://mc.yandex.ru; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; connect-src 'self' https://*.yandex.ru https://*.yandex.com; frame-src https://yandex.ru; object-src 'none'; base-uri 'self'; frame-ancestors 'none'" always;
  gzip on;
  gzip_types text/css application/javascript application/json image/svg+xml;
- location /api/ { proxy_pass http://backend:8080; proxy_set_header Host $host; proxy_set_header X-Page-Path $request_uri; proxy_read_timeout 25s; }
- location = /robots.txt { proxy_pass http://backend:8080; }
- location = /sitemap.xml { proxy_pass http://backend:8080; }
- location /uploads/ { proxy_pass http://backend:8080; }
- location = /healthz { proxy_pass http://backend:8080; }
+ location /api/ { proxy_pass ${BACKEND_URL}; proxy_ssl_server_name on; proxy_set_header Host $proxy_host; proxy_set_header X-Page-Path $request_uri; proxy_read_timeout 25s; }
+ location = /robots.txt { proxy_pass ${BACKEND_URL}; proxy_ssl_server_name on; }
+ location = /sitemap.xml { proxy_pass ${BACKEND_URL}; proxy_ssl_server_name on; }
+ location /uploads/ { proxy_pass ${BACKEND_URL}; proxy_ssl_server_name on; }
+ location = /healthz { proxy_pass ${BACKEND_URL}; proxy_ssl_server_name on; }
  location /assets/ { expires 1y; try_files $uri =404; }
  location /images/ { expires 7d; try_files $uri =404; }
  location / { expires -1; try_files $uri $uri/ /index.html; }
